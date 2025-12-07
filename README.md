@@ -102,7 +102,7 @@ You need a local server environment to run PHP and MySQL.
     <!-- end list -->
 
     ```bash
-    git clone [https://github.com/your-username/Jan-Suraksha.git](https://github.com/your-username/Jan-Suraksha.git)
+    git clone [https://github.com/your-username/jan_suraksha.git]
     ```
 
 3.  **Database Configuration:**
