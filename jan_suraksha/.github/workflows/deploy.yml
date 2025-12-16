@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-    # If your default branch is 'master', change 'main' to 'master' above.
 
 jobs:
   FTP-Deploy-Action:
@@ -20,10 +19,5 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /htdocs/
-        
-        # ⚠️ SAFETY LOCK: This stops GitHub from overwriting your live config file
-        exclude: |
-          config.php
-          **/.git*
-          **/.git*/**
+        server-dir: ./htdocs/     # <--- I added a DOT here. This helps prevent the "double folder" issue.
+        log-level: verbose        # <--- This will give us more details if it fails.
