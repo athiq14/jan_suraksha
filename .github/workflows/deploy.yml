@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-    # If your default branch is 'master', change 'main' to 'master' above.
 
 jobs:
   FTP-Deploy-Action:
@@ -15,15 +14,22 @@ jobs:
         fetch-depth: 2
 
     - name: FTP-Deploy-Action
-      uses: SamKirkland/FTP-Deploy-Action@4.3.5
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /htdocs/
         
-        # ⚠️ SAFETY LOCK: This stops GitHub from overwriting your live config file
+        # This tells GitHub to go inside your folder
+        local-dir: ./jan_suraksha/
+        
+        # This puts the files in the main public folder
+        server-dir: ./htdocs/
+        
+        # This forces the update
+        dangerous-clean-slate: true
+        
         exclude: |
-          config.php
           **/.git*
           **/.git*/**
+          config.php
