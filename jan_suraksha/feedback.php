@@ -21,6 +21,26 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 ?>
 <?php include 'header.php'; ?>
+<style>
+    /* For pages with custom backgrounds, override body background */
+body {
+    background-color: var(--color-bg) !important;
+    background-image: var(--custom-bg, none) !important;
+}
+
+/* Update hardcoded colors to use CSS vars */
+.text-primary { color: var(--color-primary) !important; }
+.btn-primary { 
+    background-color: var(--color-primary); 
+    border-color: var(--color-primary); 
+}
+.btn-primary:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+    border-color: color-mix(in srgb, var(--color-primary) 80%, black);
+}
+
+</style>
+
 
 <main id="page-content" class="container my-5">
     <div class="row justify-content-center">
