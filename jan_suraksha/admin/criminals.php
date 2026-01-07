@@ -17,14 +17,22 @@ if (!$criminal_id) {
     $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
     $offset = ($page - 1) * $per_page;
 
-    $total = (int) ($mysqli->query("SELECT COUNT(*) AS c FROM criminals")->fetch_assoc()['c'] ?? 0);
+    // Get totals for pagination - Using Prepared Statement
+    $stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM criminals");
+    $stmt->execute();
+    $total = (int) ($stmt->get_result()->fetch_assoc()['c'] ?? 0);
     $total_pages = $total > 0 ? (int) ceil($total / $per_page) : 1;
 
-    $sql = "SELECT cr.*, c.complaint_code, c.status AS complaint_status 
+    // Fetch paginated criminals and join complaint to get tracking code and current complaint status - Using Prepared Statement
+    $stmt = $mysqli->prepare("SELECT cr.*, c.complaint_code, c.status AS complaint_status 
             FROM criminals cr 
             LEFT JOIN complaints c ON c.accused_id = cr.id 
-            ORDER BY cr.created_at DESC LIMIT " . (int)$offset . "," . (int)$per_page;
-    $res = $mysqli->query($sql);
+            ORDER BY cr.created_at DESC LIMIT ?, ?");
+    $offset_int = (int)$offset;
+    $per_page_int = (int)$per_page;
+    $stmt->bind_param('ii', $offset_int, $per_page_int);
+    $stmt->execute();
+    $res = $stmt->get_result();
     $rows = [];
     if ($res) {
         while ($rr = $res->fetch_assoc()) { $rows[] = $rr; }

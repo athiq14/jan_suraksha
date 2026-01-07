@@ -6,27 +6,57 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 if(empty($_SESSION['admin_id'])){ header('Location: index.php'); exit; }
 
-function run_query($sql){
+// Helper function for prepared statements
+function prepare_and_execute($sql, $types = '', $params = []) {
     global $mysqli;
-    $res = $mysqli->query($sql);
-    if($res === false){
-        error_log("DB query failed: " . $mysqli->error . " -- SQL: " . $sql);
+    $stmt = $mysqli->prepare($sql);
+    if (!$stmt) {
+        error_log("Prepare failed: " . $mysqli->error);
         return false;
     }
-    return $res;
+    if (!empty($types) && !empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        return false;
+    }
+    return $stmt->get_result();
 }
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 1. Top-Level Metrics
-$total = run_query("SELECT COUNT(*) AS c FROM complaints") ? run_query("SELECT COUNT(*) AS c FROM complaints")->fetch_assoc()['c'] ?? 0 : 0;
-$pending = run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='Pending'") ? run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='Pending'")->fetch_assoc()['c'] ?? 0 : 0;
-$investigating = run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='In Progress'") ? run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='In Progress'")->fetch_assoc()['c'] ?? 0 : 0;
-$resolved = run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='Resolved'") ? run_query("SELECT COUNT(*) AS c FROM complaints WHERE status='Resolved'")->fetch_assoc()['c'] ?? 0 : 0;
-$criminals = run_query("SELECT COUNT(*) AS c FROM criminals") ? run_query("SELECT COUNT(*) AS c FROM criminals")->fetch_assoc()['c'] ?? 0 : 0;
+// 1. Top-Level Metrics - Using Prepared Statements
+$stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM complaints");
+$stmt->execute();
+$total = $stmt->get_result()->fetch_assoc()['c'] ?? 0;
 
-// 2. Crime Category Breakdown
-$category_query = run_query("SELECT crime_type, COUNT(*) as count FROM complaints GROUP BY crime_type ORDER BY count DESC LIMIT 5");
+$stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM complaints WHERE status = ?");
+$status = 'Pending';
+$stmt->bind_param('s', $status);
+$stmt->execute();
+$pending = $stmt->get_result()->fetch_assoc()['c'] ?? 0;
+
+$stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM complaints WHERE status = ?");
+$status = 'In Progress';
+$stmt->bind_param('s', $status);
+$stmt->execute();
+$investigating = $stmt->get_result()->fetch_assoc()['c'] ?? 0;
+
+$stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM complaints WHERE status = ?");
+$status = 'Resolved';
+$stmt->bind_param('s', $status);
+$stmt->execute();
+$resolved = $stmt->get_result()->fetch_assoc()['c'] ?? 0;
+
+$stmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM criminals");
+$stmt->execute();
+$criminals = $stmt->get_result()->fetch_assoc()['c'] ?? 0;
+
+// 2. Crime Category Breakdown - Using Prepared Statements
+$stmt = $mysqli->prepare("SELECT crime_type, COUNT(*) as count FROM complaints GROUP BY crime_type ORDER BY count DESC LIMIT 5");
+$stmt->execute();
+$category_query = $stmt->get_result();
 $category_labels = []; $category_data = [];
 if($category_query){
     while($row = $category_query->fetch_assoc()){
@@ -35,10 +65,12 @@ if($category_query){
     }
 }
 
-// 3. Recent Complaints
-$recent_complaints = run_query("SELECT c.id, c.complaint_code, c.crime_type, c.status, c.created_at, u.name as complainant 
-                                FROM complaints c LEFT JOIN users u ON c.user_id = u.id 
-                                ORDER BY c.created_at DESC LIMIT 8");
+// 3. Recent Complaints - Using Prepared Statements
+$stmt = $mysqli->prepare("SELECT c.id, c.complaint_code, c.crime_type, c.status, c.created_at, u.name as complainant 
+                          FROM complaints c LEFT JOIN users u ON c.user_id = u.id 
+                          ORDER BY c.created_at DESC LIMIT 8");
+$stmt->execute();
+$recent_complaints = $stmt->get_result();
 ?>
 
 <!doctype html>
