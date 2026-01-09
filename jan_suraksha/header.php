@@ -987,6 +987,7 @@ require_once __DIR__ . '/config.php';
               <i class="bi bi-flag-fill me-1"></i> File a Complaint
             </a>
           </li>
+            
           <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'track-status.php' ? 'active' : ''; ?>" href="track-status.php">
               <i class="bi bi-search me-1"></i> Track Status
@@ -997,6 +998,12 @@ require_once __DIR__ . '/config.php';
               <i class="bi bi-info-circle-fill me-1"></i> About Us
             </a>
           </li>
+            <li class="nav-item">
+  <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'gallery.php' ? 'active' : ''; ?>" href="gallery.php">
+    <i class="bi bi-images me-1"></i> Gallery
+  </a>
+</li>
+
           <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'blog.php' ? 'active' : ''; ?>" href="blog.php">
               <i class="bi bi-journal-text me-1"></i> Blog
