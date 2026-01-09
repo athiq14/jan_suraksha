@@ -91,8 +91,6 @@ Jan-Suraksha/
 | <img width="1883" height="929" alt="image" src="https://github.com/user-attachments/assets/1e2bec0a-7cb3-4a39-ab51-f7ad1d60d6db" /> | <img width="1918" height="889" alt="image" src="https://github.com/user-attachments/assets/0c5d3021-4ec1-4121-b071-7e1595a11b68" /> |
 |<img width="1902" height="888" alt="image" src="https://github.com/user-attachments/assets/a2af0064-5b11-465b-9873-45e0801182aa" /> | <img width="1863" height="842" alt="image" src="https://github.com/user-attachments/assets/ef31c001-9214-4229-b623-4828a8306fe4" /> |
 
-### Gallery Page
-![Gallery Page Output](screenshots/gallery-output.png)
 
 
 
